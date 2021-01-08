@@ -1,2 +1,6 @@
 docker_compose/config/*
 docker_compose/wp-app/*
+
+bin/
+obj/
+.vscode/
