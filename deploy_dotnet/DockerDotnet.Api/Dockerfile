@@ -1,15 +1,22 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
-WORKDIR /app
-EXPOSE 5000
-EXPOSE 5001
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-COPY *.csproj ./
-RUN dotnet restore
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
+WORKDIR /src
+COPY ["DockerDotnet.Api/DockerDotnet.Api.csproj", "DockerDotnet.Api/"]
+RUN dotnet restore "DockerDotnet.Api/DockerDotnet.Api.csproj"
 COPY . .
-RUN dotnet publish -c Release -o out
+WORKDIR "/src/DockerDotnet.Api"
+RUN dotnet build "DockerDotnet.Api.csproj" -c Release -o /app/build
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0
+FROM build AS publish
+RUN dotnet publish "DockerDotnet.Api.csproj" -c Release -o /app/publish
+
+FROM base AS final
 WORKDIR /app
-COPY --from=build /app/out .
-CMD ["run"]
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "DockerDotnet.Api.dll"]

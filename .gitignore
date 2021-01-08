@@ -3,4 +3,5 @@ docker_compose/wp-app/*
 
 bin/
 obj/
+.vs/
 .vscode/
