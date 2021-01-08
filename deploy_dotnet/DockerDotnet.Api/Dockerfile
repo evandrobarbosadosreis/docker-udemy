@@ -1,5 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /app
+EXPOSE 5000
+EXPOSE 5001
 
 COPY *.csproj ./
 RUN dotnet restore
